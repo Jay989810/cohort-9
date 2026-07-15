@@ -1,0 +1,8 @@
+{
+  "name": "MyNFT #0",
+  "description": "A token from the MyNFT collection.",
+  "image": "ipfs://REPLACE_WITH_YOUR_IMAGE_CID",
+  "attributes": [
+    { "trait_type": "Example Trait", "value": "Example Value" }
+  ]
+}

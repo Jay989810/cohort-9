@@ -2,7 +2,7 @@
 cache/
 out/
 soljson-latest.js
-
+lib/
 # Ignores development broadcast logs
 !/broadcast
 /broadcast/*/31337/
