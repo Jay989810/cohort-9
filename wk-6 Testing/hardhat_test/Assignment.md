@@ -1,0 +1,1 @@
+Test the full adashe contract feel free to update logic where neccessary 
