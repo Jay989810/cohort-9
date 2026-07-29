@@ -28,7 +28,7 @@ describe("Test Counter Contract", function () {
 
   })
 
-  describe.only("Incrementing the counter", () =>{
+  describe("Incrementing the counter", () =>{
     it("Should increment x by 1", async function () {
       await counter.inc();
       
