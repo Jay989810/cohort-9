@@ -5,7 +5,12 @@ import { useWriteContract, useWaitForTransactionReceipt, useAccount } from 'wagm
 import { useRouter } from 'next/router';
 import { openriverAbi, openriverAddress } from '../../contracts';
 
-// Sample image preset URLs to make testing easy for beginners
+// ==============================================================================
+// BEGINNER REACT LESSON: Forms & Smart Contract Interactions
+// Preset sample image URLs to make testing easy without needing IPFS!
+// If IPFS is omitted, standard image links (https://...) work completely fine!
+// ==============================================================================
+
 const SAMPLE_PRESETS = [
   {
     name: 'Cyberpunk Image',
@@ -21,21 +26,21 @@ const SAMPLE_PRESETS = [
   },
 ];
 
-// Mint Page Component
 const MintPage: NextPage = () => {
   const router = useRouter();
   const { isConnected } = useAccount();
 
-  // State variable to store token image link entered in form
+  // 1. useState: Form input state for image URL / metadata URI
   const [tokenURI, setTokenURI] = useState(SAMPLE_PRESETS[0].uri);
-  // State variable for creator royalty percentage
+
+  // 2. useState: Form input state for creator royalty fee (0% to 50%)
   const [royalty, setRoyalty] = useState<number>(5);
 
-  // Wagmi hooks to run 'newItem' contract function on smart contract
+  // 3. wagmi hooks: Sends 'newItem' transaction to smart contract
   const { writeContract, data: hash, isPending, error: writeError } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
 
-  // When transaction succeeds, wait 2 seconds and navigate to My NFTs page
+  // 4. useEffect: Redirects to '/myNFT' page 2 seconds after mint transaction succeeds
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
@@ -45,7 +50,7 @@ const MintPage: NextPage = () => {
     }
   }, [isSuccess, router]);
 
-  // Function called when user clicks 'Mint NFT' button
+  // 5. Function called when user clicks 'Mint NFT' button
   const handleMint = () => {
     if (!tokenURI) return;
     writeContract({
@@ -69,7 +74,7 @@ const MintPage: NextPage = () => {
         </div>
 
         <div className="simple-card p-6 space-y-4">
-          {/* Token URI input */}
+          {/* Image URL / Metadata Link Input */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
               Image URL / Metadata Link
@@ -82,7 +87,7 @@ const MintPage: NextPage = () => {
               className="simple-input w-full px-3 py-2 rounded text-xs mb-2"
             />
 
-            {/* Presets */}
+            {/* Quick Image Presets */}
             <div className="space-y-1">
               <span className="text-xs text-slate-400">Quick Presets:</span>
               <div className="flex flex-wrap gap-2">
@@ -104,7 +109,7 @@ const MintPage: NextPage = () => {
             </div>
           </div>
 
-          {/* Royalty input */}
+          {/* Creator Royalty Input */}
           <div>
             <div className="flex justify-between items-center mb-1">
               <label className="text-xs font-semibold text-slate-300">
@@ -125,7 +130,7 @@ const MintPage: NextPage = () => {
             </p>
           </div>
 
-          {/* Image Preview Box */}
+          {/* Live Image Preview Box */}
           <div className="p-3 bg-slate-900 rounded border border-slate-800 space-y-2">
             <span className="text-xs text-slate-400 font-semibold">Preview:</span>
             <div className="aspect-square w-32 rounded overflow-hidden bg-slate-800 mx-auto">
@@ -139,14 +144,14 @@ const MintPage: NextPage = () => {
             </div>
           </div>
 
-          {/* Write Error Notification */}
+          {/* Transaction Error Box */}
           {writeError && (
             <div className="p-3 bg-red-950 border border-red-800 text-red-300 text-xs rounded">
               Error: {writeError.message.slice(0, 100)}...
             </div>
           )}
 
-          {/* Success Notification */}
+          {/* Transaction Success Box */}
           {isSuccess && (
             <div className="p-3 bg-green-950 border border-green-800 text-green-300 text-xs rounded font-semibold">
               🎉 Success! NFT Minted. Redirecting to My NFTs...

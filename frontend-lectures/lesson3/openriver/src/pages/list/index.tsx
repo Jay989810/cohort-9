@@ -7,24 +7,28 @@ import { useRouter } from 'next/router';
 import { openriverAbi, openriverAddress } from '../../contracts';
 import { useNFTs } from '../../hooks/useNFTs';
 
-// Sell/List NFT Page Component
+// ==============================================================================
+// BEGINNER REACT LESSON: Listing NFTs for Sale
+// This page lets users select an NFT they own and set a price in ETH.
+// ==============================================================================
+
 const ListPage: NextPage = () => {
   const router = useRouter();
   const { isConnected } = useAccount();
   const { userNFTs } = useNFTs();
 
-  // State inputs for Token ID and Price in ETH
+  // 1. useState: Stores selected token ID and listing price input strings
   const [tokenIdInput, setTokenIdInput] = useState<string>('');
   const [priceEth, setPriceEth] = useState<string>('');
 
-  // Wagmi hooks to run 'listOnMarketplace' function
+  // 2. wagmi hooks: Sends 'listOnMarketplace' transaction to smart contract
   const { writeContract, data: hash, isPending, error: writeError } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
 
-  // Find selected NFT object from owned list if matches token ID
+  // 3. Find selected NFT object from owned collection
   const selectedNFT = userNFTs.find((item) => item.tokenId.toString() === tokenIdInput);
 
-  // Navigate to home page when item is successfully listed
+  // 4. useEffect: Redirects to home page 2 seconds after listing succeeds
   useEffect(() => {
     if (isSuccess) {
       const timer = setTimeout(() => {
@@ -34,11 +38,11 @@ const ListPage: NextPage = () => {
     }
   }, [isSuccess, router]);
 
-  // Handle form submit for listing NFT
+  // 5. Function called when user clicks 'List NFT For Sale' button
   const handleList = () => {
     if (!tokenIdInput || !priceEth || isNaN(Number(priceEth)) || Number(priceEth) <= 0) return;
     try {
-      const priceWei = parseEther(priceEth); // Convert ETH string input into Wei
+      const priceWei = parseEther(priceEth); // Convert ETH decimal string to Wei BigInt
       writeContract({
         abi: openriverAbi,
         address: openriverAddress,
@@ -63,7 +67,7 @@ const ListPage: NextPage = () => {
         </div>
 
         <div className="simple-card p-6 space-y-4">
-          {/* Select NFT from owned items */}
+          {/* Select NFT from owned collection */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
               Select Owned NFT
@@ -96,7 +100,7 @@ const ListPage: NextPage = () => {
             />
           </div>
 
-          {/* Selected NFT Preview */}
+          {/* Selected NFT Preview Card */}
           {selectedNFT && (
             <div className="flex items-center gap-3 p-3 bg-slate-900 rounded border border-slate-800">
               <img src={selectedNFT.imageSrc} alt={selectedNFT.name} className="w-12 h-12 rounded object-cover" />
@@ -107,7 +111,7 @@ const ListPage: NextPage = () => {
             </div>
           )}
 
-          {/* Price input */}
+          {/* Listing Price Input */}
           <div>
             <label className="block text-xs font-semibold text-slate-300 mb-1">
               Price (ETH)
@@ -123,21 +127,21 @@ const ListPage: NextPage = () => {
             />
           </div>
 
-          {/* Write Error */}
+          {/* Error Message */}
           {writeError && (
             <div className="p-3 bg-red-950 border border-red-800 text-red-300 text-xs rounded">
               Error: {writeError.message.slice(0, 100)}...
             </div>
           )}
 
-          {/* Success message */}
+          {/* Success Message */}
           {isSuccess && (
             <div className="p-3 bg-green-950 border border-green-800 text-green-300 text-xs rounded font-semibold">
               🎉 Success! NFT listed for sale. Redirecting to home...
             </div>
           )}
 
-          {/* Submit button */}
+          {/* Submit Button */}
           <button
             onClick={handleList}
             disabled={!isConnected || isPending || isConfirming || !tokenIdInput || !priceEth}

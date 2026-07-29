@@ -6,12 +6,16 @@ import { Cards } from '../../components/Cards';
 import { useNFTs } from '../../hooks/useNFTs';
 import { openriverAbi, openriverAddress } from '../../contracts';
 
-// My Collection Page Component
+// ==============================================================================
+// BEGINNER REACT LESSON: User Collection Page
+// Displays NFTs owned by the connected crypto wallet address.
+// ==============================================================================
+
 const MyNFTPage: NextPage = () => {
   const { address, isConnected } = useAccount();
   const { refresh } = useNFTs();
 
-  // Read smart contract to check if user has approved marketplace operator
+  // Read smart contract to check if user has granted operator approval
   const { data: isApprovedForAll, refetch: refetchApproval } = useReadContract({
     abi: openriverAbi,
     address: openriverAddress,
@@ -20,7 +24,7 @@ const MyNFTPage: NextPage = () => {
     query: { enabled: Boolean(address) },
   });
 
-  // Wagmi hooks to update approval status
+  // wagmi hooks to toggle operator approval
   const { writeContract, data: hash, isPending } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
 
@@ -31,7 +35,7 @@ const MyNFTPage: NextPage = () => {
     }
   }, [isSuccess, refetchApproval, refresh]);
 
-  // Function to toggle operator approval
+  // Toggle operator approval
   const handleToggleApproval = () => {
     if (!address) return;
     writeContract({
@@ -49,7 +53,7 @@ const MyNFTPage: NextPage = () => {
       </Head>
 
       <div className="space-y-6">
-        {/* User Info Header */}
+        {/* User Info & Approval Toggle Header */}
         <div className="simple-card p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
           <div>
             <h1 className="text-xl font-bold text-white">My NFT Collection</h1>
@@ -79,7 +83,7 @@ const MyNFTPage: NextPage = () => {
           )}
         </div>
 
-        {/* Collection Grid */}
+        {/* User Collection Cards Grid */}
         <Cards initialFilter="my" />
       </div>
     </>

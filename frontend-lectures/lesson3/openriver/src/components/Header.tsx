@@ -3,12 +3,18 @@ import Link from 'next/link';
 import { useRouter } from 'next/router';
 import React from 'react';
 
-// Header component for top navigation bar
+// ==============================================================================
+// BEGINNER REACT LESSON: Navigation Bar & Routing
+// In Next.js + React:
+// - `useRouter()` gives us the current page URL (e.g. '/' or '/mint').
+// - `<Link href="...">` lets users navigate between pages instantly without reloading.
+// ==============================================================================
+
 const Header = () => {
-  // Get current page URL path using Next.js router
+  // Get current page route path
   const router = useRouter();
 
-  // Navigation menu items with simple English names
+  // Navigation menu items array
   const navLinks = [
     { name: 'Home', path: '/' },
     { name: 'Mint NFT', path: '/mint' },
@@ -28,9 +34,9 @@ const Header = () => {
 
         {/* Navigation Links */}
         <nav className="hidden md:flex items-center gap-2 bg-slate-800 p-1 rounded-lg">
-          {/* Loop through navigation array to render buttons */}
+          {/* Map through navLinks array to render navigation buttons */}
           {navLinks.map((link) => {
-            // Check if current page matches link path
+            // Check if current page matches this link
             const isActive = router.pathname === link.path;
             return (
               <Link
@@ -48,7 +54,7 @@ const Header = () => {
           })}
         </nav>
 
-        {/* Wallet Connect Button */}
+        {/* Wallet Connect Button (RainbowKit) */}
         <div>
           <ConnectButton showBalance={false} />
         </div>

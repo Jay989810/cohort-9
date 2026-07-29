@@ -1,8 +1,13 @@
 import type { ReactNode } from 'react';
 import Header from '../components/Header';
-import Link from 'next/link';
 import { openriverAddress } from '../contracts';
 import { truncateAddress } from '../utils/nft';
+
+// ==============================================================================
+// BEGINNER REACT LESSON: Page Layout & Wrappers
+// In React, a "Layout" component wraps around every page ({children}).
+// It provides a consistent navigation Header at the top and Footer at the bottom.
+// ==============================================================================
 
 type LayoutProps = {
   children: ReactNode;
@@ -11,12 +16,15 @@ type LayoutProps = {
 export default function DashboardLayout({ children }: LayoutProps) {
   return (
     <div className="min-h-screen flex flex-col bg-[#07090e] text-slate-100 selection:bg-cyan-500 selection:text-white">
+      {/* Top Header Navigation Bar */}
       <Header />
 
+      {/* Main Page Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {children}
       </main>
 
+      {/* Bottom Page Footer */}
       <footer className="border-t border-slate-900 bg-slate-950/60 py-8 text-xs text-slate-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-2">

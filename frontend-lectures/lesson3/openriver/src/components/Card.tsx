@@ -4,41 +4,45 @@ import { openriverAbi, openriverAddress } from '../contracts';
 import { NFTItemData, truncateAddress } from '../utils/nft';
 import { ListModal, TransferModal, ApproveModal } from './NFTActionModals';
 
-// Props passed into Card component
+// ==============================================================================
+// BEGINNER REACT LESSON: Component Props
+// In React, components are custom HTML tags. `props` are arguments passed into
+// the component tag (like <Card nft={item} onRefresh={reload} />).
+// ==============================================================================
+
 interface CardProps {
-  nft: NFTItemData;
-  onRefresh: () => void;
+  nft: NFTItemData;         // Single NFT item data object
+  onRefresh: () => void;    // Function to reload NFT list when actions happen
 }
 
-// Single NFT Card Component
 export const Card: React.FC<CardProps> = ({ nft, onRefresh }) => {
-  // Get current logged-in user wallet address
+  // 1. Get logged-in user wallet address from wagmi library
   const { address } = useAccount();
 
-  // State variables for controlling modal popups (true = open, false = closed)
+  // 2. useState: Component memory to control popup modal visibility (true/false)
   const [showList, setShowList] = useState(false);
   const [showTransfer, setShowTransfer] = useState(false);
   const [showApprove, setShowApprove] = useState(false);
 
-  // Wagmi hooks to handle Quick Buy transaction
+  // 3. wagmi hooks to handle Quick Buy transaction
   const { writeContract: buyContract, data: buyHash, isPending: isBuyPending } = useWriteContract();
   const { isLoading: isBuyConfirming, isSuccess: isBuySuccess } = useWaitForTransactionReceipt({ hash: buyHash });
 
-  // Wagmi hooks to handle Quick Delist transaction
+  // 4. wagmi hooks to handle Quick Delist transaction
   const { writeContract: delistContract, data: delistHash, isPending: isDelistPending } = useWriteContract();
   const { isLoading: isDelistConfirming, isSuccess: isDelistSuccess } = useWaitForTransactionReceipt({ hash: delistHash });
 
-  // Refresh page data when buy or delist transaction succeeds
+  // 5. useEffect: Refresh page data automatically when transaction completes
   React.useEffect(() => {
     if (isBuySuccess || isDelistSuccess) {
       onRefresh();
     }
   }, [isBuySuccess, isDelistSuccess, onRefresh]);
 
-  // Check if logged-in user owns this NFT
+  // Check if current user is owner of this NFT
   const isOwner = Boolean(address && nft.owner.toLowerCase() === address.toLowerCase());
 
-  // Function called when user clicks "Buy Now" button
+  // Function called when user clicks "Buy Now"
   const handleQuickBuy = () => {
     buyContract({
       abi: openriverAbi,
@@ -49,7 +53,7 @@ export const Card: React.FC<CardProps> = ({ nft, onRefresh }) => {
     });
   };
 
-  // Function called when owner clicks "Remove Listing" button
+  // Function called when owner clicks "Remove Listing"
   const handleQuickDelist = () => {
     delistContract({
       abi: openriverAbi,
@@ -91,7 +95,7 @@ export const Card: React.FC<CardProps> = ({ nft, onRefresh }) => {
             </div>
           </div>
 
-          {/* NFT Name & Owner Information */}
+          {/* NFT Name & Owner Info */}
           <div className="space-y-1 mb-3">
             <h3 className="font-bold text-base text-white truncate">
               {nft.name}
@@ -105,7 +109,7 @@ export const Card: React.FC<CardProps> = ({ nft, onRefresh }) => {
           </div>
         </div>
 
-        {/* Price & Action Buttons Area */}
+        {/* Price & Action Buttons */}
         <div className="pt-3 border-t border-slate-800 space-y-3">
           <div className="flex justify-between items-center">
             <span className="text-xs text-slate-400 uppercase font-semibold">
@@ -116,7 +120,7 @@ export const Card: React.FC<CardProps> = ({ nft, onRefresh }) => {
             </span>
           </div>
 
-          {/* Conditional Action Buttons */}
+          {/* Action Buttons depending on owner or buyer status */}
           <div>
             {isOwner ? (
               nft.isListed ? (
@@ -152,7 +156,7 @@ export const Card: React.FC<CardProps> = ({ nft, onRefresh }) => {
         </div>
       </div>
 
-      {/* Modal Dialog Popups */}
+      {/* Modal Windows */}
       <ListModal
         isOpen={showList}
         onClose={() => setShowList(false)}
