@@ -2,20 +2,12 @@ import { useWriteContract } from "wagmi";
 import { openriverAbi, openriverAddress } from "../../contracts";
 import { useState } from "react";
 
-// ==============================================================================
-// BEGINNER REACT LESSON: Simple Form Dashboard
-// Demonstrates how to take user input from text fields and trigger a contract write.
-// ==============================================================================
-
 const Dashboard = () => {
-    // 1. wagmi hook for minting NFT
     const { writeContract: mintNFT } = useWriteContract();
     
-    // 2. useState: Input fields state memory
     const [tokenUrI, setTokenUrI] = useState("");
     const [royalty, setRoyalty] = useState(0);
 
-    // 3. Mint button click handler
     const handleMintNFT = async () => {
         mintNFT({
             abi: openriverAbi,

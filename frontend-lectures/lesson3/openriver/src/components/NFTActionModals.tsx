@@ -4,31 +4,19 @@ import { parseEther } from 'viem';
 import { openriverAbi, openriverAddress } from '../contracts';
 import { NFTItemData, truncateAddress } from '../utils/nft';
 
-// ==============================================================================
-// BEGINNER REACT LESSON: Modal Windows & Component Props
-// In React, a "Modal" is a popup window that sits over the page content.
-// Props are parameters passed into components (like function arguments).
-// ==============================================================================
-
 interface ModalProps {
-  isOpen: boolean;           // True = show modal popup, False = hide modal
-  onClose: () => void;       // Function to call when user clicks 'X' or 'Cancel'
-  nft: NFTItemData | null;   // The NFT object selected by user
-  onSuccess?: () => void;    // Optional callback to refresh page when transaction finishes
+  isOpen: boolean;
+  onClose: () => void;
+  nft: NFTItemData | null;
+  onSuccess?: () => void;
 }
 
-// ==============================================================================
-// 1. LISTING MODAL: Allows NFT owner to put item for sale on marketplace
-// ==============================================================================
 export const ListModal: React.FC<ModalProps> = ({ isOpen, onClose, nft, onSuccess }) => {
-  // useState: Memory for input field where user types the ETH price
   const [priceEth, setPriceEth] = useState('');
 
-  // wagmi hooks for writing to smart contract ('listOnMarketplace' function)
   const { writeContract, data: hash, isPending, error: writeError } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
 
-  // useEffect: Runs when transaction succeeds -> closes modal and resets form
   useEffect(() => {
     if (isSuccess) {
       onSuccess?.();
@@ -37,14 +25,11 @@ export const ListModal: React.FC<ModalProps> = ({ isOpen, onClose, nft, onSucces
     }
   }, [isSuccess, onSuccess, onClose]);
 
-  // If modal is closed or no NFT is selected, render nothing (null)
   if (!isOpen || !nft) return null;
 
-  // Called when user clicks "Confirm Listing" button
   const handleList = () => {
     if (!priceEth || isNaN(Number(priceEth)) || Number(priceEth) <= 0) return;
     try {
-      // Convert price from ETH decimal string to Wei BigInt number
       const priceWei = parseEther(priceEth);
       writeContract({
         abi: openriverAbi,
@@ -98,15 +83,10 @@ export const ListModal: React.FC<ModalProps> = ({ isOpen, onClose, nft, onSucces
   );
 };
 
-
-// ==============================================================================
-// 2. TRANSFER MODAL: Allows owner to send NFT to another crypto wallet address
-// ==============================================================================
 export const TransferModal: React.FC<ModalProps> = ({ isOpen, onClose, nft, onSuccess }) => {
   const { address } = useAccount();
   const [recipient, setRecipient] = useState('');
 
-  // wagmi hooks to trigger 'safeTransferFrom' smart contract function
   const { writeContract, data: hash, isPending, error: writeError } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
 
@@ -170,15 +150,10 @@ export const TransferModal: React.FC<ModalProps> = ({ isOpen, onClose, nft, onSu
   );
 };
 
-
-// ==============================================================================
-// 3. APPROVAL MODAL: Grants marketplace permission to move NFT on owner's behalf
-// ==============================================================================
 export const ApproveModal: React.FC<ModalProps> = ({ isOpen, onClose, nft, onSuccess }) => {
   const [operator, setOperator] = useState(openriverAddress);
   const [isForAll, setIsForAll] = useState(true);
 
-  // wagmi hooks to trigger 'setApprovalForAll' or 'approve' function
   const { writeContract, data: hash, isPending, error: writeError } = useWriteContract();
   const { isLoading: isConfirming, isSuccess } = useWaitForTransactionReceipt({ hash });
 
@@ -264,10 +239,6 @@ export const ApproveModal: React.FC<ModalProps> = ({ isOpen, onClose, nft, onSuc
   );
 };
 
-
-// ==============================================================================
-// 4. DETAIL MODAL: Popup showing complete NFT image, price, creator, and actions
-// ==============================================================================
 export const DetailModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
@@ -279,11 +250,9 @@ export const DetailModal: React.FC<{
 }> = ({ isOpen, onClose, nft, onOpenList, onOpenTransfer, onOpenApprove, onRefresh }) => {
   const { address } = useAccount();
 
-  // wagmi hooks to buy NFT
   const { writeContract: buyContract, data: buyHash, isPending: isBuyPending } = useWriteContract();
   const { isLoading: isBuyConfirming, isSuccess: isBuySuccess } = useWaitForTransactionReceipt({ hash: buyHash });
 
-  // wagmi hooks to delist NFT
   const { writeContract: delistContract, data: delistHash, isPending: isDelistPending } = useWriteContract();
   const { isLoading: isDelistConfirming, isSuccess: isDelistSuccess } = useWaitForTransactionReceipt({ hash: delistHash });
 
@@ -323,7 +292,6 @@ export const DetailModal: React.FC<{
         <button onClick={onClose} className="absolute top-4 right-4 text-slate-400 hover:text-white">✕</button>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Left Column: NFT Image */}
           <div>
             <div className="aspect-square rounded-lg overflow-hidden bg-slate-900 border border-slate-800 mb-3">
               <img src={nft.imageSrc} alt={nft.name} className="w-full h-full object-cover" />
@@ -336,7 +304,6 @@ export const DetailModal: React.FC<{
             </div>
           </div>
 
-          {/* Right Column: NFT Details & Buttons */}
           <div className="flex flex-col justify-between space-y-4">
             <div>
               <h2 className="text-2xl font-bold text-white mb-2">{nft.name}</h2>
@@ -358,7 +325,6 @@ export const DetailModal: React.FC<{
               </div>
             </div>
 
-            {/* Action Buttons based on owner status */}
             <div className="space-y-2 pt-4 border-t border-slate-800">
               {isOwner ? (
                 <div className="space-y-2">

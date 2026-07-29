@@ -3,36 +3,21 @@ import Card from './Card';
 import { useNFTs } from '../hooks/useNFTs';
 import { useAccount } from 'wagmi';
 
-// ==============================================================================
-// BEGINNER REACT LESSON: Rendering Lists & Filters
-// In React, we use `.map()` to loop through an array of items and render a 
-// component (like <Card />) for each item.
-// `useMemo` is an optimization that recalculates the filtered list only when
-// `nfts`, `activeTab`, or `searchTerm` changes!
-// ==============================================================================
-
 export const Cards = ({ initialFilter }: { initialFilter?: 'all' | 'listed' | 'my' }) => {
-  // 1. Load NFT data and refresh function from our custom hook
   const { nfts, loading, refresh } = useNFTs();
   const { address } = useAccount();
 
-  // 2. useState: Component memory to track selected filter tab ('all', 'listed', or 'my')
   const [activeTab, setActiveTab] = useState<'all' | 'listed' | 'my'>(initialFilter || 'all');
-  
-  // 3. useState: Component memory to store search input text typed by user
   const [searchTerm, setSearchTerm] = useState('');
 
-  // 4. Filter NFTs array according to active tab and search input text
   const filteredNFTs = useMemo(() => {
     return nfts.filter((nft) => {
-      // Tab Filter Check
       if (activeTab === 'listed' && !nft.isListed) return false;
       if (activeTab === 'my') {
         if (!address) return false;
         if (nft.owner.toLowerCase() !== address.toLowerCase()) return false;
       }
 
-      // Search Bar Filter Check
       if (searchTerm.trim() !== '') {
         const query = searchTerm.toLowerCase();
         const matchesName = nft.name.toLowerCase().includes(query);
@@ -47,9 +32,7 @@ export const Cards = ({ initialFilter }: { initialFilter?: 'all' | 'listed' | 'm
 
   return (
     <div className="space-y-6">
-      {/* Top Bar: Tabs & Search Input */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 simple-card p-4">
-        {/* Filter Tabs */}
         <div className="flex gap-2 bg-slate-900 p-1 rounded-lg border border-slate-800">
           <button
             onClick={() => setActiveTab('all')}
@@ -83,7 +66,6 @@ export const Cards = ({ initialFilter }: { initialFilter?: 'all' | 'listed' | 'm
           </button>
         </div>
 
-        {/* Search Input & Refresh Button */}
         <div className="flex items-center gap-2 w-full sm:w-auto">
           <input
             type="text"
@@ -102,14 +84,12 @@ export const Cards = ({ initialFilter }: { initialFilter?: 'all' | 'listed' | 'm
         </div>
       </div>
 
-      {/* Loading Message */}
       {loading && (
         <div className="simple-card p-8 text-center text-slate-400 text-sm">
-          Loading NFTs from smart contract... Please wait.
+          Loading NFTs... Please wait.
         </div>
       )}
 
-      {/* Grid of NFT Cards */}
       {!loading && filteredNFTs.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {filteredNFTs.map((nft) => (
@@ -118,7 +98,6 @@ export const Cards = ({ initialFilter }: { initialFilter?: 'all' | 'listed' | 'm
         </div>
       )}
 
-      {/* Empty State message when 0 NFTs match filter */}
       {!loading && filteredNFTs.length === 0 && (
         <div className="simple-card p-8 text-center space-y-2">
           <h3 className="text-base font-bold text-white">No NFTs Found</h3>
